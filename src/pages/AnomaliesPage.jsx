@@ -51,13 +51,13 @@ export default function AnomaliesPage({ abos, scope, onExport }) {
       </div>
 
       {/* Graphique des anomalies */}
-      <Card title="Anomalies détectées par type" subtitle="Cliquez sur une barre ou une carte ci-dessous pour filtrer la liste détaillée">
-        <div style={{ width: '100%', height: 340 }}>
+      <Card title="Anomalies détectées par type" subtitle="Cliquez sur une barre du graphique ou une ligne du tableau ci-dessous pour filtrer la liste détaillée">
+        <div style={{ width: '100%', height: 520 }}>
           <ResponsiveContainer>
-            <BarChart data={comptage} layout="vertical" margin={{ left: 20, right: 50 }}>
+            <BarChart data={comptage} layout="vertical" margin={{ left: 20, right: 50, top: 5, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#eef2f7" />
-              <XAxis type="number" tick={{ fontSize: 12 }} />
-              <YAxis dataKey="label" type="category" width={210} tick={{ fontSize: 11 }} />
+              <XAxis type="number" tick={{ fontSize: 12 }} allowDecimals={false} />
+              <YAxis dataKey="label" type="category" width={230} tick={{ fontSize: 11 }} interval={0} />
               <Tooltip formatter={(v, n, p) => [`${fmt(v)} (${p.payload.pct.toFixed(1)}%)`, 'Cas']} />
               <Bar dataKey="count" radius={[0, 6, 6, 0]} cursor="pointer"
                    onClick={(d) => setSelected(d.key)}>
@@ -69,32 +69,76 @@ export default function AnomaliesPage({ abos, scope, onExport }) {
         </div>
       </Card>
 
-      {/* Cartes catalogue */}
-      <div>
-        <div className="flex items-center gap-2 mb-3">
-          <AlertTriangle size={18} className="text-snde-700" />
-          <h3 className="font-bold text-slate-800">Catalogue des anomalies</h3>
+      {/* Tableau de référence des anomalies */}
+      <Card
+        title={
+          <span className="flex items-center gap-2">
+            <AlertTriangle size={16} className="text-snde-700" />
+            Catalogue des 15 anomalies détectées — signification et résultats
+          </span>
+        }
+        subtitle="Cliquez sur une ligne pour filtrer la liste détaillée plus bas. Les gravités hautes signalent les cas à investiguer en priorité."
+      >
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style={{ width: '220px' }}>Libellé</th>
+                <th>Signification &amp; intérêt pour le contrôle</th>
+                <th className="text-right" style={{ width: '80px' }}>Cas</th>
+                <th className="text-right" style={{ width: '70px' }}>%</th>
+              </tr>
+            </thead>
+            <tbody>
+              {comptage.map((c) => {
+                const isSel = selected === c.key
+                const hasCases = c.count > 0
+                return (
+                  <tr
+                    key={c.key}
+                    onClick={() => setSelected(isSel ? 'TOUTES' : c.key)}
+                    style={{ cursor: 'pointer' }}
+                    className={isSel ? 'bg-snde-50' : ''}
+                  >
+                    <td className="font-semibold text-slate-800 text-sm leading-tight">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className="inline-block w-2 h-2 rounded-full flex-shrink-0"
+                          style={{ backgroundColor: GRAVITE_COLOR[c.gravite] }}
+                        />
+                        {c.label}
+                      </div>
+                    </td>
+                    <td className="text-xs text-slate-600 leading-relaxed py-2">
+                      {c.desc}
+                    </td>
+                    <td className={`text-right font-bold text-base tabular-nums ${hasCases ? 'text-slate-800' : 'text-slate-300'}`}>
+                      {fmt(c.count)}
+                    </td>
+                    <td className={`text-right text-xs tabular-nums ${hasCases ? 'text-snde-600 font-medium' : 'text-slate-300'}`}>
+                      {c.pct.toFixed(1)} %
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-          {comptage.map((c) => {
-            const g = GRAVITE_BADGE[c.gravite]
-            const isSel = selected === c.key
-            return (
-              <button key={c.key} onClick={() => setSelected(isSel ? 'TOUTES' : c.key)}
-                className={`text-left bg-white rounded-xl border p-4 transition-all hover:shadow-md
-                  ${isSel ? 'border-snde-500 ring-2 ring-snde-200' : 'border-slate-200'}`}>
-                <div className="flex items-start justify-between gap-2 mb-2">
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${g.bg} ${g.text}`}>{g.label}</span>
-                  <span className="text-2xl font-bold text-slate-800">{fmt(c.count)}</span>
-                </div>
-                <p className="text-sm font-semibold text-slate-700 leading-tight">{c.label}</p>
-                <p className="text-[11px] text-slate-500 mt-1 leading-snug">{c.desc}</p>
-                <p className="text-[11px] text-snde-600 mt-2 font-medium">{c.pct.toFixed(1)} % des abonnés</p>
-              </button>
-            )
-          })}
+        <div className="mt-3 flex items-center gap-4 text-[11px] text-slate-500 px-1">
+          <span className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: GRAVITE_COLOR.haute }}></span>
+            Gravité haute — enquête prioritaire
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: GRAVITE_COLOR.moyenne }}></span>
+            Gravité moyenne — vérification &amp; régularisation
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: GRAVITE_COLOR.basse }}></span>
+            Gravité basse — signal faible
+          </span>
         </div>
-      </div>
+      </Card>
 
       {/* Liste détaillée */}
       <Card
@@ -107,7 +151,7 @@ export default function AnomaliesPage({ abos, scope, onExport }) {
           </span>
         }
         subtitle={selected === 'TOUTES'
-          ? 'Filtrez par type en cliquant sur une carte ci-dessus'
+          ? 'Filtrez par type en cliquant sur une ligne du tableau ci-dessus'
           : selectedDef?.desc}
         action={
           <div className="flex items-center gap-2">
