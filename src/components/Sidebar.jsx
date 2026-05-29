@@ -1,4 +1,5 @@
-import { Droplets, RotateCcw } from 'lucide-react'
+import { RotateCcw } from 'lucide-react'
+import sndeLogo from '../assets/snde-logo.webp'
 
 /**
  * Barre latérale de navigation.
@@ -11,19 +12,18 @@ import { Droplets, RotateCcw } from 'lucide-react'
 export default function Sidebar({ pages, active, onNavigate, onReset, meta, dataLoaded }) {
   return (
     <aside className="w-64 flex-shrink-0 bg-snde-950 text-slate-200 flex flex-col min-h-screen sticky top-0 h-screen">
-      {/* Logo / titre générique */}
+      {/* Logo officiel SNDE */}
       <div className="px-5 py-5 border-b border-white/10">
-        <div className="flex items-center gap-3">
-          <div className="bg-gradient-to-br from-cyan-400 to-snde-500 p-2 rounded-xl shadow-lg shadow-cyan-500/20">
-            <Droplets size={22} className="text-white" />
-          </div>
-          <div>
-            <h1 className="text-[15px] font-bold text-white tracking-tight leading-tight">
-              SNDE Analytics
-            </h1>
-            <p className="text-[11px] text-cyan-300/80">Contrôle &amp; Audit</p>
-          </div>
+        <div className="bg-white rounded-xl px-3 py-2.5 shadow-lg shadow-black/20">
+          <img
+            src={sndeLogo}
+            alt="SNDE — Société Nationale d'Eau"
+            className="w-full h-auto object-contain"
+          />
         </div>
+        <p className="text-[11px] text-cyan-300/80 mt-2.5 text-center tracking-wide">
+          Analytics · Contrôle &amp; Audit
+        </p>
       </div>
 
       {/* Navigation */}
