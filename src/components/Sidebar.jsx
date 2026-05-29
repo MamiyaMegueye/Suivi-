@@ -34,7 +34,7 @@ export default function Sidebar({ pages, active, onNavigate, onReset, meta, data
         {pages.map((p) => {
           const Icon = p.icon
           const isActive = active === p.id
-          const disabled = !dataLoaded && p.id !== 'import'
+          const disabled = !dataLoaded && p.id !== 'import' && p.id !== 'mutations'
           return (
             <button
               key={p.id}

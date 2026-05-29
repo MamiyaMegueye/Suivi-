@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from 'react'
 import * as XLSX from 'xlsx'
 import {
-  LayoutDashboard, Gauge, Droplet, ShieldAlert, UserCheck, Table2, Upload,
+  LayoutDashboard, Gauge, Droplet, ShieldAlert, UserCheck, Table2, Upload,RefreshCw,
 } from 'lucide-react'
 
 import Sidebar from './components/Sidebar.jsx'
@@ -13,6 +13,7 @@ import ConsoPage from './pages/ConsoPage.jsx'
 import AnomaliesPage from './pages/AnomaliesPage.jsx'
 import ReleveursPage from './pages/ReleveursPage.jsx'
 import DataPage from './pages/DataPage.jsx'
+import MutationsPage from './pages/MutationsPage'
 
 import { parseEtat101 } from './lib/parser.js'
 import {
@@ -104,7 +105,8 @@ export default function App() {
     { id: 'conso',     label: 'Consommations',     icon: Droplet },
     { id: 'anomalies', label: 'Anomalies & audit', icon: ShieldAlert, badge: nbAnomalies },
     { id: 'releveurs', label: 'Releveurs',         icon: UserCheck },
-    { id: 'data',      label: 'Données',           icon: Table2 },
+    { id: 'data', label: 'Données', icon: Table2 },
+    { id: 'mutations', label: 'Mutations', icon: RefreshCw },
   ]
 
   const showFilterBar = data && !['import', 'overview'].includes(page)
@@ -173,7 +175,8 @@ export default function App() {
           {data && page === 'conso'     && <ConsoPage     abos={abosFiltres} scope={scope} onExport={handleExport} />}
           {data && page === 'anomalies' && <AnomaliesPage abos={abosFiltres} scope={scope} onExport={handleExport} />}
           {data && page === 'releveurs' && <ReleveursPage abos={abosFiltres} scope={scope} onExport={handleExport} />}
-          {data && page === 'data'      && <DataPage      abos={abosFiltres} scope={scope} onExport={handleExport} />}
+          {data && page === 'data' && <DataPage abos={abosFiltres} scope={scope} onExport={handleExport} />}
+          {page === 'mutations' && <MutationsPage />}
         </div>
       </main>
     </div>
